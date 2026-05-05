@@ -68,11 +68,38 @@
         font-weight: 700;
         cursor: pointer;
       }
+
+    .dashboard-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    iframe {
+      border-radius: 8px;
+    }
     </style>
   </head>
 
   <body>
     <h1>Chessable Telemetry</h1>
+
+<h2>Dashboards</h2>
+
+<div class="dashboard-grid">
+  {% for dashboard in dashboards %}
+    <section class="dashboard-card">
+      <h3>{{ dashboard.title }}</h3>
+      <p>Open this dashboard in Kibana.</p>
+      <a href="{{ dashboard.url }}" target="_blank" rel="noopener noreferrer">
+        Open {{ dashboard.title }}
+      </a>
+    </section>
+  {% endfor %}
+</div>
+
     <div class="subtitle">
       Paste Chessable progress/review blocks and index daily snapshots into Elasticsearch.
     </div>

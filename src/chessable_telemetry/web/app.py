@@ -2,7 +2,7 @@ from argparse import Namespace
 
 from flask import Flask, redirect, render_template, request, url_for
 
-from settings import INDEX_NAME
+from settings import INDEX_NAME, KB_HOSTNAME
 
 from chessable_telemetry.collector.app import build_document
 from chessable_telemetry.storage.es_util import (
@@ -57,6 +57,13 @@ def list_courses(es):
     return courses
 
 
+def kibana_base_url():
+    if KB_HOSTNAME.startswith("http"):
+        return KB_HOSTNAME.rstrip("/")
+
+    return f"https://{KB_HOSTNAME}"
+
+
 @app.route("/", methods=["GET"])
 def index():
     es = get_client()
@@ -64,9 +71,29 @@ def index():
 
     courses = list_courses(es)
 
+    dashboards = [
+        {
+            "title": "Course Health",
+            "url": f"{kibana_base_url()}/app/dashboards#/view/chessable-course-health?_a=(viewMode:view)",
+        },
+        {
+            "title": "Cognitive Load",
+            "url": f"{kibana_base_url()}/app/dashboards#/view/chessable-cognitive-load?_a=(viewMode:view)",
+        },
+        {
+            "title": "Balance",
+            "url": f"{kibana_base_url()}/app/dashboards#/view/chessable-balance?_a=(viewMode:view)",
+        },
+        {
+            "title": "Throughput",
+            "url": f"{kibana_base_url()}/app/dashboards#/view/chessable-throughput?_a=(viewMode:view)",
+        },
+    ]
+
     return render_template(
         "index.html",
         courses=courses,
+        dashboards=dashboards,
     )
 
 
