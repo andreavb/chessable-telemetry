@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Chessable Telemetry</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        max-width: 1100px;
+        margin: 32px auto;
+        padding: 0 16px;
+        background: #f7f7f7;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        color: #555;
+        margin-bottom: 24px;
+      }
+
+      .course-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+      }
+
+      .course-title {
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+
+      .course-type {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 130px;
+        font-family: monospace;
+      }
+
+      input, select {
+        padding: 6px;
+        margin-right: 8px;
+      }
+
+      .row {
+        margin-top: 12px;
+      }
+
+      button {
+        margin-top: 12px;
+        padding: 8px 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Chessable Telemetry</h1>
+    <div class="subtitle">
+      Paste Chessable progress/review blocks and index daily snapshots into Elasticsearch.
+    </div>
+
+    {% for course in courses %}
+      <div class="course-card">
+        <form method="post" action="/snapshot">
+          <input type="hidden" name="course_name" value="{{ course.course_name }}">
+          <input type="hidden" name="course_type" value="{{ course.course_type }}">
+
+          <div class="course-title">{{ course.course_name }}</div>
+          <div class="course-type">{{ course.course_type }}</div>
+
+          <div class="grid">
+            <div>
+              <label>Progress block</label>
+              <textarea name="progress_text" placeholder="116 Not learned (43%)
+54 Learning (20%)
+95 Mature (35%)
+6 Difficult (2%)"></textarea>
+            </div>
+
+            <div>
+              <label>Reviews block</label>
+              <textarea name="reviews_text" placeholder="Now / 1 hour / 4 hours: 0 | None | None
+1 day: 10 | Very low
+3 days: 13 | Very low
+7 days: 36 | Very low"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <label>Session minutes</label>
+            <input type="number" name="session_minutes" value="0" min="0">
+
+            <label>New items today</label>
+            <input type="number" name="new_items_today" value="0" min="0">
+
+            <label>Reviews done today</label>
+            <input type="number" name="reviews_done_today" value="0" min="0">
+          </div>
+
+          <div class="row">
+            <label>Mode</label>
+            <select name="mode">
+              <option value="normal">normal</option>
+              <option value="turbo">turbo</option>
+              <option value="pocos">Poços mode</option>
+              <option value="maintenance">maintenance</option>
+            </select>
+
+            <label>Notes</label>
+            <input type="text" name="notes" size="50">
+          </div>
+
+          <button type="submit">Save snapshot</button>
+        </form>
+      </div>
+    {% endfor %}
+  </body>
+</html>
